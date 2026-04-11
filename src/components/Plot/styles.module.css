@@ -1,0 +1,27 @@
+.chart {
+    border-radius: 20px;
+    background-color:  rgba(88, 85, 85, 0.185);
+    transition: 0.3s all;
+    padding: 45px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.subChart {
+    border-radius: 20px;
+    background-color:  rgba(170, 166, 166, 0.185);
+    transition: 0.3s all;
+    padding: 45px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    height: 300px;
+}
+
+.chartsList {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}

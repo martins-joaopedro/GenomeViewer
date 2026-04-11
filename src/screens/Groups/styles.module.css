@@ -1,0 +1,145 @@
+.accessionControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+:root {
+    --container-size: clamp(250px, 18%, 300px);
+    --contaner-heigth: 300px;
+}
+
+.chart {
+    margin-left: var(--container-size);
+    width: calc(100% - var(--container-size));
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.metricsContainer {
+    padding: 10px;
+    width: var(--container-size);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    position: fixed;
+    gap: 10px;
+}
+
+.metrics {
+    padding: 10px;
+    background-color: var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 10px;    
+}
+
+.metrics button {
+    min-width: 15px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.metrics button:hover {
+    filter: brightness(0.9);
+}
+
+.metrics div {
+    padding: 10px;
+}
+
+.metrics input {
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.controls {
+    display: flex;
+}
+
+.controls .checkboxes {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 5px;
+    font-size: 0.8rem;
+    min-height: 300px;
+}
+
+.controls .checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    padding-left: 15px;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: background-color 0.2s;
+    background-color: rgba(29, 29, 29, 0.136);
+}
+
+.controls .checkboxes label:hover {
+    background-color: var(--gray);
+}
+
+.controls .checkboxes input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #212c41;
+}
+
+.results {
+    background-color: var(--warn);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.error {
+    width: calc(100% - var(--container-size));
+    min-height: 700px;
+    margin: 10px;
+    margin-left: var(--container-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 100px;
+    background-color: var(--gray);
+    border-radius: 25px;
+    font-size: 20px;
+}
+
+.error :nth-child(1) {
+    transform: rotate(90deg);
+    font-size: 50px;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}

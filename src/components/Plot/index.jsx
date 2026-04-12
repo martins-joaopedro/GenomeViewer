@@ -61,7 +61,8 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
 
     const sortedElementos = elementos.sort((a, b) => a.start - b.start);
     const min = sortedElementos[0]?.start;
-    const max = sortedElementos.at(-1)?.stop;
+    let max = -Infinity
+    sortedElementos.forEach(el => { max = Math.max(max, el.stop) })
 
     return {
       contigName: title,

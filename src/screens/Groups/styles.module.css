@@ -54,10 +54,6 @@
     filter: brightness(0.9);
 }
 
-.metrics div {
-    padding: 10px;
-}
-
 .metrics input {
     padding: 5px 10px;
     border-radius: 10px;
@@ -70,7 +66,6 @@
     display: flex;
     flex-direction: column;
     border-radius: 15px;
-    border: 1px solid #04122c49;
 }
 
 input[type="file"] {
@@ -91,9 +86,8 @@ input[type="file"] {
     filter: brightness(0.9);
 }
 
-
 .controls .checkboxes {
-    padding: 0;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -105,7 +99,7 @@ input[type="file"] {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px;
+    padding: 8px 10px;
     cursor: pointer;
     border-radius: 25px;
     transition: background-color 0.2s;

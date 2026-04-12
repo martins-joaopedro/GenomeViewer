@@ -22,7 +22,6 @@ export const Groups = () => {
         reader.onload = async (e) => {
           try {
             const parsedData = await JSON.parse(e.target.result);
-            console.log(parsedData);
             setData(parsedData)
             
           } catch (error) {
@@ -46,10 +45,6 @@ export const Groups = () => {
     setMinimalElements,
     setSearchName,
     toggleElement,
-    willExpandRange,
-    setExpandRange,
-    wontEnterInOtherGroups,
-    setEnterInOtherGroups,
   } = useGenerateGroups({ accessionsData });
 
   const { report } = useReportData({
@@ -87,30 +82,41 @@ export const Groups = () => {
     <div>
       <div className={styles.container}>
         <div className={styles.metricsContainer}>
-          <div className={styles.metrics}>
-            <div className={styles.controls}>
-              <div className={styles.checkboxes}>
-                {foundElementsArray &&
-                  foundElementsArray?.map((category, index) => (
-                    <label key={index}>
-                      <input
-                        type="checkbox"
-/* 
-                        TODO: marcando sozinho */
 
-                        checked={ELEMENTS_NEEDED.find(el => el == category)}
-                        value={category}
-                        onChange={({ target }) => toggleElement(target)}
-                      />
-                      {category}
-                    </label>
-                  ))}
+          <div className={styles.results}>
+            <span>Accession: {groups && groups[index]?.accession}</span>
+            <span>{`Foram encontrados agrupamentos com essas configurações em ${groups?.length} genomas!`}</span>
+          </div>
+
+          <div className={styles.metrics}>
+            
+            <label className={styles.fileLabel} htmlFor="arquivo">Enviar arquivo</label>
+            <input  
+              name="arquivo" id="arquivo"
+              type="file" accept=".json" 
+              onChange={handleFileInput} 
+            />
+            
+            <div className={styles.cell}>
+              <span>Elementos necessários no grupo</span>
+              <div className={styles.controls}>
+                <div className={styles.checkboxes}>
+                  {foundElementsArray &&
+                    foundElementsArray?.map((category, index) => (
+                      <label key={index}>
+                        <input
+                          type="checkbox"
+                          checked={ELEMENTS_NEEDED.find(el => el == category)}
+                          value={category}
+                          onChange={({ target }) => toggleElement(target)}
+                        />
+                        {category}
+                      </label>
+                    ))}
+                </div>
               </div>
             </div>
-
-            <span>Envie o arquivo</span>
-            <input type="file" accept=".json" onChange={handleFileInput} />
-
+            
             <span>Pesquise o nome do arquivo: </span>
             <input
               type="text"
@@ -119,14 +125,6 @@ export const Groups = () => {
                 setSearchName(String(target.value))
               }
             />
-
-            <button onClick={() => setExpandRange(prev => !prev)}> 
-              <span>{willExpandRange ? "VAI EXPANDIR" : "NAO VAI EXPANDIR"}</span>
-            </button>
-
-            <button onClick={() => setEnterInOtherGroups(prev => !prev)}> 
-              <span>{wontEnterInOtherGroups ? "NAO VAI ENTRAR EM OUTROS" : "VAI ENTRAR"}</span>
-            </button>
 
             <span>Defina a Distância Máxima: </span>
             <input
@@ -156,10 +154,7 @@ export const Groups = () => {
               </button>
             </div>
           </div>
-          <div className={styles.results}>
-            <span>Accession: {groups && groups[index]?.accession}</span>
-            <span>{`Grupos encontrados em ${groups?.length} genomas!`}</span>
-          </div>
+          
           <Report report={report} />
         </div>
         { groups?.length ? (

@@ -2,13 +2,9 @@ import styles from "./styles.module.css";
 
 export const Report = ({ report }) => {
 
-  console.log(report);
-
-  const { assembly_info, submitter } = report || {};
+  const { assembly_info, organism} = report || {};
   const { biosample } = assembly_info || {};
   const { attributes } = biosample || {};
-
-  console.log(assembly_info, attributes);
   const not_interests = ["strain", "depth", "culture_collection", ""];
   const interests = [
     "sub_species",
@@ -28,11 +24,8 @@ export const Report = ({ report }) => {
         <div className={styles.container}>
           <div className={styles.pill}>
             <span className={styles.title}>
-              {report?.organism?.organismName}
+              { organism?.organism_name }
             </span>
-          </div>
-          <div className={styles.pill}>
-            <span className={styles.title}>{submitter}</span>
           </div>
           {attributes &&
             attributes

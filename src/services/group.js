@@ -8,14 +8,9 @@ const sorting = (el1, el2) => el1.contig.localeCompare(el2.contig) || el1.start 
 // TODO: sempre verificar a distancia máxima de um gene de outros MGES
 
 
-export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DISTANCE, willExpandRange, wontEnterInOtherGroups }) => {
+export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DISTANCE }) => {
     
-    const MGEs = ["phage", "transposable_phage", "integron", "is_digis"]
-    
-    //const acessionsData = await get("MGEs_accessions.json")
-
     let allGroupsByAccession = []
-    
     accessionsData.forEach(({ accession, args, integrons, phages, is_digis, is_isescan }) => {
 
         let elements = [...args, ...integrons, ...phages, ...is_digis ]
@@ -60,10 +55,8 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
             
         // add cada subgrupo em cada grupo
         groups.forEach(group => {
-            
-            const subgroups = checkGroupInRatio(group, willExpandRange, wontEnterInOtherGroups)
+            const subgroups = checkGroupInRatio(group)
             group.subgroups = subgroups
-            
         })
  
         let groupData = {
@@ -151,10 +144,9 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
     return group && hasGenes
 } */
 
-const checkGroupInRatio = ({ contig, elementos }, willExpandRange, wontEnterInOtherGroups) => {
+const checkGroupInRatio = ({ contig, elementos }) => {
     
     const MAXIMAL_DISTANCE = 5000;
-
     let geneSubgroups = []
 
         // cria subgrupos de genes
@@ -208,15 +200,6 @@ const checkGroupInRatio = ({ contig, elementos }, willExpandRange, wontEnterInOt
                 
                 if (isInside) {
                     group.elementos.push(element)
-
-                    // REMOVER nao tem sentido biologico
-                    /* if(willExpandRange) {
-                        group.minRange = Math.min(group.minRange, element.start)
-                        group.maxRange = Math.max(group.maxRange, element.stop)
-                    } */
-
-                    if(wontEnterInOtherGroups)
-                        break
                 }
             }
         })

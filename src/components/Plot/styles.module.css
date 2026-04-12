@@ -1,6 +1,18 @@
+
+.chartContainer {
+    gap: 10px;
+    border: 1px solid var(--gray);
+    border-radius: 25px;
+    padding: 10px;
+    box-shadow: 1px 1px 3px rgba(54, 53, 53, 0.121);
+}
+
+.subChartContainer {
+    
+}
+
 .chart {
     border-radius: 20px;
-    background-color:  rgba(88, 85, 85, 0.185);
     transition: 0.3s all;
     padding: 45px;
     display: flex;
@@ -9,10 +21,13 @@
 }
 
 .subChart {
+    border: 1px solid var(--gray);
     border-radius: 20px;
-    background-color:  rgba(170, 166, 166, 0.185);
     transition: 0.3s all;
     padding: 45px;
+    margin: 10px 0;
+    box-shadow: 1px 1px 3px rgba(54, 53, 53, 0.121);
+    background-color: rgb(222, 223, 223);
     display: flex;
     flex-direction: column;
     text-align: center;

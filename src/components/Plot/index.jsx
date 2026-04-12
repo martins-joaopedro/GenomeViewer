@@ -57,113 +57,115 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
   const allLabels = Object.values(classification).map((d) => d.label);
 
   const buildChart = (elementos, title, key, isSubGroup = false) => {
-      if (!elementos || elementos.length === 0) return null;
+    if (!elementos || elementos.length === 0) return null;
 
-      const sortedElementos = elementos.sort((a, b) => a.start - b.start);
-      const min = sortedElementos[0]?.start;
-      const max = sortedElementos.at(-1)?.stop;
+    const sortedElementos = elementos.sort((a, b) => a.start - b.start);
+    const min = sortedElementos[0]?.start;
+    const max = sortedElementos.at(-1)?.stop;
 
-      return {
-        contigName: title,
-        contigIndex: key,
-        isSubGroup,
-        chartData: {
-          labels: allLabels,
-          datasets: [
-            {
-              label: "Elementos Genéticos",
-              data: elementos.map((d, i) => ({
-                x: [d.start, d.stop],
-                y: flattened ? "Elementos" : i,
-                elementLabel: d.name,
-                classification: d.classification,
-              })),
-              backgroundColor: elementos.map(
-                (d) =>
-                  (classification[d.classification]?.color || "gray") +
-                  (flattened ? "80" : "")
-              ),
-              barThickness: Math.min(10, height / (elementos.length + 20)),
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          indexAxis: "y",
-          scales: {
-            x: {
-              type: "linear",
-              title: { display: true, text: "Posição no contig" },
-              min,
-              max,
-            },
-            y: {
-              type: "category",
-              title: { display: true, text: "Elementos" },
-              labels: flattened
-                ? ["Elementos"]
-                : elementos.map((_, i) => i),
-              ticks: {
-                display: !flattened,
-              },
-              grid: {
-                display: false,
-              },
-              reverse: true,
-            },
+    return {
+      contigName: title,
+      contigIndex: key,
+      isSubGroup,
+      chartData: {
+        labels: allLabels,
+        datasets: [
+          {
+            label: "Elementos Genéticos",
+            data: elementos.map((d, i) => ({
+              x: [d.start, d.stop],
+              y: flattened ? "Elementos" : i,
+              elementLabel: d.name,
+              classification: d.classification,
+            })),
+            backgroundColor: elementos.map(
+              (d) =>
+                (classification[d.classification]?.color || "gray") +
+                (flattened ? "80" : "")
+            ),
+            barThickness: Math.min(10, height / (elementos.length + 20)),
           },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ({ raw }) => {
-                  const { elementLabel, classification } = raw || {};
-                  const positions = `Start: ${raw.x[0]} | Stop: ${raw.x[1]} | `
-                  
-                  if (classification === "gene") {
-                    setGene(elementLabel);
-                    return positions + geneInfo || "";
-                  }
-
-                  return positions + classification;
-                },
-                title: (context) => {
-                  const { raw } = context[0] || {};
-                  return raw?.elementLabel || "";
-                },
-              },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: "y",
+        scales: {
+          x: {
+            type: "linear",
+            title: { display: true, text: "Posição no contig" },
+            min,
+            max,
+          },
+          y: {
+            type: "category",
+            title: { display: true, text: "Elementos" },
+            labels: flattened
+              ? ["Elementos"]
+              : elementos.map((_, i) => i),
+            ticks: {
+              display: !flattened,
             },
-            datalabels: {
-              font: {
-                size: Math.max(10, fontSize - (elementos.length / fontSize)),
-              },
-              formatter: (value, context) =>
-                !flattened
-                  ? context.dataset.data[context.dataIndex].elementLabel
-                  : "",
-              textAlign: "center",
-              color: "#000000e0",
+            grid: {
+              display: false,
             },
+            reverse: true,
           },
         },
-      };
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ({ raw }) => {
+                const { elementLabel, classification } = raw || {};
+                const positions = `Start: ${raw.x[0]} | Stop: ${raw.x[1]} | `
+
+                if (classification === "gene") {
+                  setGene(elementLabel);
+                  return positions + geneInfo || "";
+                }
+
+                return positions + classification;
+              },
+              title: (context) => {
+                const { raw } = context[0] || {};
+                return raw?.elementLabel || "";
+              },
+            },
+          },
+          datalabels: {
+            font: {
+              size: Math.max(10, fontSize - (elementos.length / fontSize)),
+            },
+            formatter: (value, context) =>
+              !flattened
+                ? context.dataset.data[context.dataIndex].elementLabel
+                : "",
+            textAlign: "center",
+            color: "#000000e0",
+          },
+        },
+      },
+    };
   };
-    
+
   const generateAllCharts = (groups) => {
     if (!groups) return [];
 
+    const charts = [];
     return groups.flatMap(({ contig, elementos, subgroups }, contigIndex) => {
-      const charts = [];
+
+      const data = {}
 
       const groupChart = buildChart(
         elementos,
-        `${contig} (Grupo Completo)`,
+        `${contig} (Grupo)`,
         `${contigIndex}-group`
       );
 
-      if (groupChart) 
-        charts.push(groupChart);
+      data.mainChart = groupChart;
+      data.subCharts = []
 
       if (subgroups?.length) {
         subgroups.forEach((sg, sgIndex) => {
@@ -173,36 +175,58 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
             `${contigIndex}-sub-${sgIndex}`,
             true // é um subgrupo
           );
-
-          if (subChart) 
-            charts.push(subChart);
+          data.subCharts.push(subChart)
         });
       }
 
-      return charts;
+      charts.push(data)
+
+      return data;
     });
   };
 
   const allCharts = generateAllCharts(groups?.groups);
 
+  console.log(allCharts);
+
   return (
     <div className={styles.chartsList}>
       {groups &&
-        allCharts?.map(({ contigIndex, contigName, chartData, options, isSubGroup }) => (
-          <div
-            className={isSubGroup ? styles.subChart : styles.chart }
-            key={contigIndex}
-            style={{
-              width: `100%`,
-              maxHeight: `${!flattened ? height : 300}px`,
-            }}
-          >
-            <h4>Contig: {contigName}</h4>
-            <Bar data={chartData} options={options} />
+        allCharts?.map((group, i) => (
+          <div className={styles.chartContainer}>
+            <div
+              className={group.mainChart.isSubGroup ? styles.subChart : styles.chart}
+              key={i}
+              style={{
+                width: `100%`,
+                maxHeight: `${!flattened ? height : 300}px`,
+              }}
+            >
+              <h4>{group.mainChart.contigName}</h4>
+              <Bar data={group.mainChart.chartData} options={group.mainChart.options} />
+            </div>
+
+            <div className={styles.subChartContainer}>
+              
+              {group.subCharts &&
+                group.subCharts?.map(({ contigIndex, contigName, chartData, options, isSubGroup }) =>
+                (<div
+                  className={isSubGroup ? styles.subChart : styles.chart}
+                  key={contigIndex}
+                  style={{
+                    width: `100%`,
+                    maxHeight: `${!flattened ? height : 300}px`,
+                  }}
+                >
+                  <h4>{contigName}</h4>
+                  <Bar data={chartData} options={options} />
+                </div>))
+              }
+            </div>
           </div>
         ))}
     </div>
   );
 
-  
+
 };

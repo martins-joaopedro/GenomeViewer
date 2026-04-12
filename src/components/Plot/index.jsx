@@ -211,7 +211,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
                   key={contigIndex}
                   style={{
                     width: `100%`,
-                    maxHeight: `${!flattened ? 3*height/2 : 300}px`,
+                    maxHeight: `${!flattened ? (height - 100) : 300}px`,
                   }}
                 >
                   <h4>{contigName}</h4>

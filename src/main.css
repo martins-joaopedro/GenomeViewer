@@ -2,13 +2,12 @@
 
 :root {
     --background: #d9d9d9;
-    --accent: #7cb8bb;
-    --orange: #e8b159;
+    --accent: #84c0c4;
+    --orange: #e4b973;
     --warn: #e87b63;
     --gray: #00000009;
     font-family: 'Roboto', sans-serif;
 }
-
 
 * {
     padding: 0;

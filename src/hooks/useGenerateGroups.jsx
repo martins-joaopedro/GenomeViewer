@@ -4,17 +4,13 @@ import { getGroups } from "../services/group";
 import { elements } from "chart.js";
 
 export const useGenerateGroups = ({ accessionsData }) => {
+  
   // params to filter the results
-
-  console.log(accessionsData);
-
-  const DEFAULT_MAX = 5000
+  const DEFAULT_MAX = 1e30
   const DEFAULT_MIN = 2
 
   const [SEARCH_NAME, setSearchName] = useState("");
   const [MINIMAL_ELEMENTS, setMinimalElements] = useState(DEFAULT_MIN);
-  const [willExpandRange, setExpandRange] = useState(false);
-  const [wontEnterInOtherGroups, setEnterInOtherGroups] = useState(false);
   const [ELEMENTS_NEEDED, setElementsNeeded] = useState([]);
   const [MAXIMAL_DISTANCE, setMaximalDistance] = useState(DEFAULT_MAX);
   const [FIXED_GENOMES, setFixedGenome] = useState([]);
@@ -24,8 +20,6 @@ export const useGenerateGroups = ({ accessionsData }) => {
       "getGroup",
       MINIMAL_ELEMENTS ?? DEFAULT_MIN,
       MAXIMAL_DISTANCE ?? DEFAULT_MAX,
-      willExpandRange,
-      wontEnterInOtherGroups,
       accessionsData
     ],
     queryFn: () =>
@@ -33,8 +27,6 @@ export const useGenerateGroups = ({ accessionsData }) => {
         accessionsData,
         MINIMAL_ELEMENTS: MINIMAL_ELEMENTS ?? DEFAULT_MIN,
         MAXIMAL_DISTANCE: MAXIMAL_DISTANCE ?? DEFAULT_MAX,
-        willExpandRange, 
-        wontEnterInOtherGroups
       }),
   });
 
@@ -89,10 +81,6 @@ export const useGenerateGroups = ({ accessionsData }) => {
     setSearchName,
     MINIMAL_ELEMENTS,
     setMinimalElements,
-    willExpandRange,
-    setExpandRange,
-    wontEnterInOtherGroups,
-    setEnterInOtherGroups,
     ELEMENTS_NEEDED,
     setElementsNeeded,
     MAXIMAL_DISTANCE,

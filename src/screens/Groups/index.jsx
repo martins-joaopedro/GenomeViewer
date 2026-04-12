@@ -9,6 +9,7 @@ export const Groups = () => {
 
   const [accessionsData, setData] = useState()
   const [index, setIndex] = useState(0);
+  const [height, setHeight] = useState(3);
   const [flattened, setFlattened] = useState(false);
 
   const inc = () => setIndex((prev) => prev + 1);
@@ -143,6 +144,17 @@ export const Groups = () => {
                 setMinimalElements(Number(target.value))
               }
             />
+            
+            <span>Defina a Altura dos Gráficos: </span>
+            <input
+              type="range"
+              min={3}
+              max={8}
+              value={height}
+              onChange={({ target }) =>
+                setHeight(Number(target.value))
+              }
+            />
             <button onClick={toggleFlattened}>Achatar</button>
             
             <div className={styles.accessionControls}>
@@ -164,7 +176,7 @@ export const Groups = () => {
               index={index}
               flattened={flattened}
               width={"100%"}
-              height={500}
+              height={height * 100}
               fontSize={10}
             />
           </div>

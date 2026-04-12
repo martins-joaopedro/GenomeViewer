@@ -154,7 +154,6 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
   const generateAllCharts = (groups) => {
     if (!groups) return [];
 
-    const charts = [];
     return groups.flatMap(({ contig, elementos, subgroups }, contigIndex) => {
 
       const data = {}
@@ -180,15 +179,11 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
         });
       }
 
-      charts.push(data)
-
       return data;
     });
   };
 
   const allCharts = generateAllCharts(groups?.groups);
-
-  console.log(allCharts);
 
   return (
     <div className={styles.chartsList}>
@@ -196,7 +191,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
         allCharts?.map((group, i) => (
           <div className={styles.chartContainer}>
             <div
-              className={group.mainChart.isSubGroup ? styles.subChart : styles.chart}
+              className={styles.chart}
               key={i}
               style={{
                 width: `100%`,
@@ -216,7 +211,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
                   key={contigIndex}
                   style={{
                     width: `100%`,
-                    maxHeight: `${!flattened ? height : 300}px`,
+                    maxHeight: `${!flattened ? height/2 : 300}px`,
                   }}
                 >
                   <h4>{contigName}</h4>

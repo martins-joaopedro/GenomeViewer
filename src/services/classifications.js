@@ -11,5 +11,5 @@ export const getIsolationClassification = (isolationSource, json) => {
         lista.includes(isolationSource)
     );
 
-    return res[0] || "other" 
+    return res?.at(0) || "other" 
 }

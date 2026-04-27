@@ -13,8 +13,10 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
     
     const classificationFile = await getClassificationFile();
  
+    //console.log(accessionsData);
+
     let allGroupsByAccession = []
-    accessionsData.forEach(({ accession, args, integrons, phages, is_digis, is_isescan, isolationSource }) => {
+    accessionsData.forEach(({ accession, args, integrons, phages, is_digis, is_isescan, isolation_source }) => {
 
         let elements = [...args, ...integrons, ...phages, ...is_digis ]
         let sortedElements = elements.sort(sorting)
@@ -61,13 +63,14 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
             const subgroups = checkGroupInRatio(group)
             group.subgroups = subgroups
         })
- 
-        const isolationClassification = getIsolationClassification(isolationSource, classificationFile)
+    
+        console.log(isolation_source);
+
+        const isolationClassification = getIsolationClassification(isolation_source, classificationFile)
+
         console.log(isolationClassification);
 
-
         let groupData = {
-            isolationSource,
             isolationClassification,
             accession,
             groups: groups,

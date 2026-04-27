@@ -7,10 +7,6 @@
     box-shadow: 1px 1px 3px rgba(54, 53, 53, 0.121);
 }
 
-.subChartContainer {
-    
-}
-
 .chart {
     border-radius: 20px;
     transition: 0.3s all;
@@ -39,3 +35,26 @@
     flex-direction: column;
     gap: 15px;
 }
+
+.chartsList[data-classification="environmental"] .chartContainer {
+    border: 5px solid;
+    border-color: var(--environmental);
+}
+
+.chartsList[data-classification="clinical"] .chartContainer {
+    border: 5px solid;
+    border-color: var(--clinical);
+}
+
+
+.chartsList[data-classification="food"] .chartContainer {
+    border: 5px solid;
+    border-color: var(--food);
+}
+
+
+.chartsList[data-classification="veterinary"] .chartContainer {
+    border: 5px solid;
+    border-color: var(--veterinary);
+}
+

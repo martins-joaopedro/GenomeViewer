@@ -186,7 +186,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
   const allCharts = generateAllCharts(groups?.groups);
 
   return (
-    <div className={styles.chartsList}>
+    <div className={styles.chartsList} data-classification={groups?.classification} >
       {groups &&
         allCharts?.map((group, i) => (
           <div className={styles.chartContainer}>

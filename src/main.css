@@ -6,6 +6,12 @@
     --orange: #e4b973;
     --warn: #e87b63;
     --gray: #00000009;
+
+    --environmental: #74a381;
+    --clinical: #b4c3ce;
+    --veterinary: rgb(228, 160, 131)eb4;
+    --food: rgb(224, 162, 162)eb4;
+
     font-family: 'Roboto', sans-serif;
 }
 

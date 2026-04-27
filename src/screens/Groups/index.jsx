@@ -42,10 +42,14 @@ export const Groups = () => {
     MAXIMAL_DISTANCE,
     MINIMAL_ELEMENTS,
     ELEMENTS_NEEDED,
+    allClassifications,
+    CLASSIFICATIONS,
+    setClassifications,
     setMaximalDistance,
     setMinimalElements,
     setSearchName,
     toggleElement,
+    toggleClassification
   } = useGenerateGroups({ accessionsData });
 
   const { report } = useReportData({
@@ -116,6 +120,24 @@ export const Groups = () => {
                     ))}
                 </div>
               </div>
+
+              <span>Classificações</span>
+              <div className={styles.controls}>
+                <div className={styles.checkboxes}>
+                  {allClassifications &&
+                    allClassifications?.map((category, index) => (
+                      <label key={index}>
+                        <input
+                          type="checkbox"
+                          checked={CLASSIFICATIONS.find(el => el == category)}
+                          value={category}
+                          onChange={({ target }) => toggleClassification(target)}
+                        />
+                        {category}
+                      </label>
+                    ))}
+                </div>
+              </div>
             </div>
             
             <span>Pesquise o nome do arquivo: </span>
@@ -177,7 +199,7 @@ export const Groups = () => {
               flattened={flattened}
               width={"100%"}
               height={height * 100}
-              fontSize={10}
+              fontSize={10}     
             />
           </div>
         ) : (

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { getGroups } from "../services/group";
-import { elements } from "chart.js";
 
 export const useGenerateGroups = ({ accessionsData }) => {
   
@@ -9,9 +8,12 @@ export const useGenerateGroups = ({ accessionsData }) => {
   const DEFAULT_MAX = 1e30
   const DEFAULT_MIN = 2
 
+  const allClassifications = ["clinical", "environmental", "veterinary", "food", "other"]
+
   const [SEARCH_NAME, setSearchName] = useState("");
   const [MINIMAL_ELEMENTS, setMinimalElements] = useState(DEFAULT_MIN);
   const [ELEMENTS_NEEDED, setElementsNeeded] = useState([]);
+  const [CLASSIFICATIONS, setClassifications] = useState([]);
   const [MAXIMAL_DISTANCE, setMaximalDistance] = useState(DEFAULT_MAX);
   const [FIXED_GENOMES, setFixedGenome] = useState([]);
 
@@ -38,12 +40,30 @@ export const useGenerateGroups = ({ accessionsData }) => {
     setElementsNeeded(res);
   };
 
+  const toggleClassification = ({ value, checked }) => {
+    let res = [];
+    if (checked) 
+        res = [...CLASSIFICATIONS, value];
+    else res = CLASSIFICATIONS.filter((el) => el !== value);
+    setClassifications(res);
+  };
+
   let neededSet = new Set(ELEMENTS_NEEDED);
       neededSet.add("gene")
 
-  let filteredGroups = data?.data
+  let filteredGroupsByClassification = data?.data || [];
+
+  if (CLASSIFICATIONS.length > 0) {
+    filteredGroupsByClassification = filteredGroupsByClassification.filter(
+      ({ isolationClassification }) =>
+        CLASSIFICATIONS.includes(isolationClassification)
+    );
+  }
+
+  let filteredGroups = filteredGroupsByClassification;
+
   if(neededSet.size > 0 || SEARCH_NAME != "") {
-      filteredGroups = data?.data.map(({ accession, groups }) => {
+      filteredGroups = filteredGroupsByClassification.map(({ accession, groups, isolationClassification }) => {
     
         // filter the valid groups
         const validGroups = groups.filter(group => {
@@ -57,14 +77,15 @@ export const useGenerateGroups = ({ accessionsData }) => {
             const hasAllNeededElements = [...neededSet].every(element => groupElementSet.has(element))
             
             // filtra os grupos que tem mais que gene na composição
-            groupElementSet.delete("gene")
-            const hasMoreThanGenes = groupElementSet.size > 0
+            //groupElementSet.delete("gene")
+            //const hasMoreThanGenes = groupElementSet.size > 0
 
-            return hasAllNeededElements && hasMoreThanGenes;
+            return hasAllNeededElements;
         });
         
         // returns the filtering by groups that contain all needed elements 
         return { 
+            classification: isolationClassification,
             accession: accession,
             groups: validGroups
         };
@@ -81,10 +102,14 @@ export const useGenerateGroups = ({ accessionsData }) => {
     setSearchName,
     MINIMAL_ELEMENTS,
     setMinimalElements,
+    CLASSIFICATIONS,
+    allClassifications,
+    setClassifications,
     ELEMENTS_NEEDED,
     setElementsNeeded,
     MAXIMAL_DISTANCE,
     setMaximalDistance,
     toggleElement,
+    toggleClassification
   };
 };

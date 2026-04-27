@@ -1,6 +1,7 @@
 import { elements } from "chart.js";
 import { get } from "./graph"
 import { getFileInLS } from "./localStorage";
+import { getIsolationClassification, getClassificationFile } from "./classifications";
 
 const sorting = (el1, el2) => el1.contig.localeCompare(el2.contig) || el1.start - el2.start;
 
@@ -10,8 +11,10 @@ const sorting = (el1, el2) => el1.contig.localeCompare(el2.contig) || el1.start 
 
 export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DISTANCE }) => {
     
+    const classificationFile = await getClassificationFile();
+ 
     let allGroupsByAccession = []
-    accessionsData.forEach(({ accession, args, integrons, phages, is_digis, is_isescan }) => {
+    accessionsData.forEach(({ accession, args, integrons, phages, is_digis, is_isescan, isolationSource }) => {
 
         let elements = [...args, ...integrons, ...phages, ...is_digis ]
         let sortedElements = elements.sort(sorting)
@@ -59,7 +62,13 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
             group.subgroups = subgroups
         })
  
+        const isolationClassification = getIsolationClassification(isolationSource, classificationFile)
+        console.log(isolationClassification);
+
+
         let groupData = {
+            isolationSource,
+            isolationClassification,
             accession,
             groups: groups,
         }

@@ -63,7 +63,7 @@ export const useGenerateGroups = ({ accessionsData }) => {
   let filteredGroups = filteredGroupsByClassification;
 
   if(neededSet.size > 0 || SEARCH_NAME != "") {
-      filteredGroups = filteredGroupsByClassification.map(({ accession, groups, isolationClassification }) => {
+      filteredGroups = filteredGroupsByClassification.map(({ accession, groups, isolationClassification, isolationSource }) => {
     
         // filter the valid groups
         const validGroups = groups.filter(group => {
@@ -86,6 +86,7 @@ export const useGenerateGroups = ({ accessionsData }) => {
         // returns the filtering by groups that contain all needed elements 
         return { 
             classification: isolationClassification,
+            isolationSource, 
             accession: accession,
             groups: validGroups
         };

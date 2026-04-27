@@ -190,6 +190,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
       {groups &&
         allCharts?.map((group, i) => (
           <div className={styles.chartContainer}>
+            <span>{groups?.isolationSource}</span>
             <div
               className={styles.chart}
               key={i}

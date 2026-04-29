@@ -189,7 +189,7 @@ export const Groups = () => {
             </div>
           </div>
           
-          <Report report={report} />
+          <Report report={report} isolationSource={groups[index]?.isolationSource} />
         </div>
         { groups?.length ? (
           <div className={styles.chart}>

@@ -36,25 +36,50 @@
     gap: 15px;
 }
 
+.chartsList .chartContainer {
+    border: 2px solid transparent;
+}
+
 .chartsList[data-classification="environmental"] .chartContainer {
-    border: 5px solid;
     border-color: var(--environmental);
 }
 
 .chartsList[data-classification="clinical"] .chartContainer {
-    border: 5px solid;
     border-color: var(--clinical);
 }
 
 
 .chartsList[data-classification="food"] .chartContainer {
-    border: 5px solid;
     border-color: var(--food);
 }
 
 
 .chartsList[data-classification="veterinary"] .chartContainer {
-    border: 5px solid;
     border-color: var(--veterinary);
+}
+
+.chartsList .isolationLabel {
+    padding: 5px;
+    border-radius: 15px;
+    min-width: 10px;
+    text-align: center;
+}
+
+.chartsList[data-classification="environmental"] .isolationLabel {
+    background-color: var(--environmental);
+}
+
+.chartsList[data-classification="clinical"] .isolationLabel {
+    background-color: var(--clinical);
+}
+
+
+.chartsList[data-classification="food"] .isolationLabel {
+    background-color: var(--food);
+}
+
+
+.chartsList[data-classification="veterinary"] .isolationLabel {
+    background-color: var(--veterinary);
 }
 

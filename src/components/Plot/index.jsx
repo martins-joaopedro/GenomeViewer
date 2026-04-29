@@ -187,10 +187,10 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
 
   return (
     <div className={styles.chartsList} data-classification={groups?.classification} >
+      <span className={styles.isolationLabel}>{groups?.isolationSource}</span>
       {groups &&
         allCharts?.map((group, i) => (
           <div className={styles.chartContainer}>
-            <span>{groups?.isolationSource}</span>
             <div
               className={styles.chart}
               key={i}

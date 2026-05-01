@@ -1,6 +1,5 @@
 import { elements } from "chart.js";
 import { get } from "./graph"
-import { getFileInLS } from "./localStorage";
 import { getIsolationClassification, getClassificationFile } from "./classifications";
 
 const sorting = (el1, el2) => el1.contig.localeCompare(el2.contig) || el1.start - el2.start;

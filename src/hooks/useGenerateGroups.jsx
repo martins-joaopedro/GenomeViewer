@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { getGroups } from "../services/group";
+import { getData } from "../services/localStorage";
 
 export const useGenerateGroups = ({ accessionsData }) => {
   
@@ -10,12 +11,15 @@ export const useGenerateGroups = ({ accessionsData }) => {
 
   const allClassifications = ["clinical", "environmental", "veterinary", "food", "other"]
 
-  const [SEARCH_NAME, setSearchName] = useState("");
-  const [MINIMAL_ELEMENTS, setMinimalElements] = useState(DEFAULT_MIN);
-  const [ELEMENTS_NEEDED, setElementsNeeded] = useState([]);
-  const [CLASSIFICATIONS, setClassifications] = useState([]);
-  const [MAXIMAL_DISTANCE, setMaximalDistance] = useState(DEFAULT_MAX);
+  const state = getData("state");
+
+  const [SEARCH_NAME, setSearchName] = useState(state.SEARCH_NAME || "");
+  const [MINIMAL_ELEMENTS, setMinimalElements] = useState(state?.MINIMAL_ELEMENTS || DEFAULT_MIN);
+  const [ELEMENTS_NEEDED, setElementsNeeded] = useState(state?.ELEMENTS_NEEDED || []);
+  const [CLASSIFICATIONS, setClassifications] = useState(state?.CLASSIFICATIONS || []);
+  const [MAXIMAL_DISTANCE, setMaximalDistance] = useState(state?.MAXIMAL_DISTANCE || DEFAULT_MAX);
   const [FIXED_GENOMES, setFixedGenome] = useState([]);
+  const [INDEX, setIndex] = useState(state?.INDEX || 0);
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -111,6 +115,8 @@ export const useGenerateGroups = ({ accessionsData }) => {
     MAXIMAL_DISTANCE,
     setMaximalDistance,
     toggleElement,
-    toggleClassification
+    toggleClassification,
+    INDEX, 
+    setIndex
   };
 };

@@ -4,16 +4,15 @@ import { Plot } from "../../components/Plot";
 import styles from "./styles.module.css";
 import { useReportData } from "../../hooks/useReportData";
 import { Report } from "../../components/Report";
+import { getData, saveData } from "../../services/localStorage";
 
 export const Groups = () => {
 
   const [accessionsData, setData] = useState()
-  const [index, setIndex] = useState(0);
+  
   const [height, setHeight] = useState(3);
   const [flattened, setFlattened] = useState(false);
 
-  const inc = () => setIndex((prev) => prev + 1);
-  const dec = () => setIndex((prev) => prev - 1);
   const toggleFlattened = () => setFlattened((prev) => !prev);
 
   const handleFileInput = async ({ target }) => {
@@ -49,31 +48,41 @@ export const Groups = () => {
     setMinimalElements,
     setSearchName,
     toggleElement,
-    toggleClassification
+    toggleClassification,
+    INDEX, 
+    setIndex,
   } = useGenerateGroups({ accessionsData });
 
+  const inc = () => {
+    setIndex((prev) => prev + 1);
+  }
+  
+  const dec = () => {
+    setIndex((prev) => prev - 1);
+  }
+
+  useEffect(() => {
+  if (!groups?.length) return;
+
+  setIndex((prev) => {
+      if (prev >= groups.length) {
+        return groups.length - 1;
+      }
+      if (prev < 0) {
+        return 0;
+      }
+      return prev;
+    });
+  }, [groups]);
+
   const { report } = useReportData({
-    accession: groups && groups[index]?.accession,
+    accession: groups && groups[INDEX]?.accession,
   });
 
-  // fixes groups index
-  // outra solução indexar pelo nmr do grupo e aplicar o maximo se for maior
   useEffect(() => {
-    if (groups && groups[index] === undefined) {
-      setIndex(0);
-    }
-
     const handleKeyDown = ({ key }) => {
-      switch (key) {
-        case "ArrowRight":
-          inc();
-          break;
-        case "ArrowLeft":
-          dec();
-          break;
-        default:
-          break;
-      }
+      if (key === "ArrowRight") inc();
+      if (key === "ArrowLeft") dec();
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -81,7 +90,18 @@ export const Groups = () => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [groups, index]);
+  }, []);
+
+  useEffect(() => {
+    saveData("state", {
+      INDEX,
+      SEARCH_NAME,
+      MAXIMAL_DISTANCE,
+      MINIMAL_ELEMENTS,
+      ELEMENTS_NEEDED,
+      CLASSIFICATIONS
+    });
+  }, [SEARCH_NAME, MAXIMAL_DISTANCE, MINIMAL_ELEMENTS, ELEMENTS_NEEDED, CLASSIFICATIONS, INDEX]);
 
   return (
     <div>
@@ -89,8 +109,10 @@ export const Groups = () => {
         <div className={styles.metricsContainer}>
 
           <div className={styles.results}>
-            <span>Accession: {groups && groups[index]?.accession}</span>
+            <span>Accession: {groups && groups[INDEX]?.accession}</span>
             <span>{`Foram encontrados agrupamentos com essas configurações em ${groups?.length} genomas!`}</span>
+            <span>indice: {INDEX} / {groups.length}</span>
+          
           </div>
 
           <div className={styles.metrics}>
@@ -180,22 +202,22 @@ export const Groups = () => {
             <button onClick={toggleFlattened}>Achatar</button>
             
             <div className={styles.accessionControls}>
-              <button onClick={dec} disabled={index === 0}>
+              <button onClick={dec} disabled={INDEX === 0}>
                 Anterior
               </button>
-              <button onClick={inc} disabled={index === groups?.length - 1}>
+              <button onClick={inc} disabled={INDEX === groups?.length - 1}>
                 Próximo
               </button>
             </div>
           </div>
           
-          <Report report={report} isolationSource={groups[index]?.isolationSource} />
+          <Report report={report} isolationSource={groups[INDEX]?.isolationSource} />
         </div>
         { groups?.length ? (
           <div className={styles.chart}>
             <Plot
-              groups={groups[index]}
-              index={index}
+              groups={groups[INDEX]}
+              index={INDEX}
               flattened={flattened}
               width={"100%"}
               height={height * 100}

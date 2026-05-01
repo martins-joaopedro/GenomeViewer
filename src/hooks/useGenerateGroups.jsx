@@ -13,7 +13,7 @@ export const useGenerateGroups = ({ accessionsData }) => {
 
   const state = getData("state");
 
-  const [SEARCH_NAME, setSearchName] = useState(state.SEARCH_NAME || "");
+  const [SEARCH_NAME, setSearchName] = useState(state?.SEARCH_NAME || "");
   const [MINIMAL_ELEMENTS, setMinimalElements] = useState(state?.MINIMAL_ELEMENTS || DEFAULT_MIN);
   const [ELEMENTS_NEEDED, setElementsNeeded] = useState(state?.ELEMENTS_NEEDED || []);
   const [CLASSIFICATIONS, setClassifications] = useState(state?.CLASSIFICATIONS || []);

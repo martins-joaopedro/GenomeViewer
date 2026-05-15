@@ -63,11 +63,7 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
             group.subgroups = subgroups
         })
     
-        console.log(isolation_source);
-
         const isolationClassification = getIsolationClassification(isolation_source, classificationFile)
-
-        console.log(isolationClassification);
 
         let groupData = {
             isolationSource: isolation_source,

@@ -63,6 +63,7 @@
     border-radius: 15px;
     min-width: 10px;
     text-align: center;
+    background-color: rgb(184, 183, 183);
 }
 
 .chartsList[data-classification="environmental"] .isolationLabel {

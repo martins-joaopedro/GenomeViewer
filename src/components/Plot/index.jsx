@@ -190,10 +190,9 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
       <span className={styles.isolationLabel}>{groups?.isolationSource}</span>
       {groups &&
         allCharts?.map((group, i) => (
-          <div className={styles.chartContainer}>
+          <div className={styles.chartContainer} key={i}>
             <div
               className={styles.chart}
-              key={i}
               style={{
                 width: `100%`,
                 maxHeight: `${!flattened ? height : 300}px`,

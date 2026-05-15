@@ -2,8 +2,6 @@ import styles from "./styles.module.css";
 
 export const Report = ({ report, isolationSource}) => {
 
-  console.log(isolationSource);
-
   const { assembly_info, organism} = report || {};
   const { biosample } = assembly_info || {};
   const { attributes } = biosample || {};

@@ -127,8 +127,6 @@ const checkGroupInRatio = ({ contig, elementos }) => {
 
     const sortedElements = [...elementos].sort(sorting);
 
-    console.log(sortedElements);
-
     // cria subgrupos de genes
     sortedElements.forEach(element => {
 

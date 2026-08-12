@@ -2,12 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { getGroups } from "../services/group";
 import { getData } from "../services/localStorage";
+import { Groups } from "../screens/Groups";
+import { elements } from "chart.js";
+import { MdElectricBike } from "react-icons/md";
 
-export const useGenerateGroups = ({ accessionsData }) => {
-  
+export const useGenerateGroups = ({ accessionsData, filters }) => {
+
   // params to filter the results
   const DEFAULT_MAX = 1e30
-  const DEFAULT_MIN = 2
+  const DEFAULT_MIN = 0
 
   const allClassifications = ["clinical", "environmental", "veterinary", "food", "other"]
 
@@ -36,24 +39,38 @@ export const useGenerateGroups = ({ accessionsData }) => {
       }),
   });
 
+  function downloadJSON(data, filename = "dados.json") {
+    const json = JSON.stringify(data, null, 2); // indentação de 2 espaços
+
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
   const toggleElement = ({ value, checked }) => {
     let res = [];
-    if (checked) 
-        res = [...ELEMENTS_NEEDED, value];
+    if (checked)
+      res = [...ELEMENTS_NEEDED, value];
     else res = ELEMENTS_NEEDED.filter((el) => el !== value);
     setElementsNeeded(res);
   };
 
   const toggleClassification = ({ value, checked }) => {
     let res = [];
-    if (checked) 
-        res = [...CLASSIFICATIONS, value];
+    if (checked)
+      res = [...CLASSIFICATIONS, value];
     else res = CLASSIFICATIONS.filter((el) => el !== value);
     setClassifications(res);
   };
 
   let neededSet = new Set(ELEMENTS_NEEDED);
-      neededSet.add("gene")
+  neededSet.add("gene")
 
   let filteredGroupsByClassification = data?.data || [];
 
@@ -66,42 +83,137 @@ export const useGenerateGroups = ({ accessionsData }) => {
 
   let filteredGroups = filteredGroupsByClassification;
 
-  if(neededSet.size > 0 || SEARCH_NAME != "") {
-      filteredGroups = filteredGroupsByClassification.map(({ accession, groups, isolationClassification, isolationSource }) => {
-    
-        // filter the valid groups
-        const validGroups = groups.filter(group => {
-            
-            // categorias de elementos de um grupo
-            const groupElementSet = new Set();  
-            group.elementos.forEach(({ classification }) => {
-              groupElementSet.add(classification)
-            });
-            
-            const hasAllNeededElements = [...neededSet].every(element => groupElementSet.has(element))
-            
-            // filtra os grupos que tem mais que gene na composição
-            //groupElementSet.delete("gene")
-            //const hasMoreThanGenes = groupElementSet.size > 0
+  if (neededSet.size > 0 || SEARCH_NAME != "") {
+    filteredGroups = filteredGroupsByClassification.map(({ accession, groups, isolationClassification, isolationSource }) => {
 
-            return hasAllNeededElements;
+      // filter the valid groups
+      const validGroups = groups.filter(group => {
+
+        // categorias de elementos de um grupo
+        const groupElementSet = new Set();
+        group.elementos.forEach(({ classification }) => {
+          groupElementSet.add(classification)
         });
-        
-        // returns the filtering by groups that contain all needed elements 
-        return { 
-            classification: isolationClassification,
-            isolationSource, 
-            accession: accession,
-            groups: validGroups
-        };
 
-        // removes non empty groups and filters by name
-        }).filter(item => item.groups.length > 0 && item.accession.toLowerCase().includes(String(SEARCH_NAME).toLowerCase())) || [];
-    }
+        const hasAllNeededElements = [...neededSet].every(element => groupElementSet.has(element))
+
+        return hasAllNeededElements;
+      });
+
+      // returns the filtering by groups that contain all needed elements 
+      return {
+        classification: isolationClassification,
+        isolationSource,
+        accession: accession,
+        groups: validGroups
+      };
+      // removes non empty groups and filters by name
+    }).filter(item => item.groups.length > 0 && item.accession.toLowerCase().includes(String(SEARCH_NAME).toLowerCase())) || [];
+  }
+
+  let availableElements = new Set()
+
+  filteredGroups.forEach(({ groups }) => {
+    groups.forEach(({ subgroups }) => {
+      subgroups.forEach(({ elementos }) => {
+        elementos.forEach(({ name }) => availableElements.add(name))
+      })
+    })
+  })
+
+  let filteredGroupsByRelations = filteredGroups
+
+  filters = filters.filter(({ active }) => active)
+
+  if (filters.length > 0) {
+
+    filteredGroupsByRelations = filteredGroups.map(genome => {
+      const groups = genome.groups.map(group => {
+
+        // filtro os subgrupos se eles respeitarem todos os filtros ativos
+        const subgroups = group.subgroups.filter(subgroup => {
+
+          const elementos = subgroup.elementos
+          const names = new Set(elementos.map(e => e.name))
+
+          return filters.every(filter => {
+
+            const { type } = filter
+
+            // filtro de estrutura => contém todos os elementos passados 
+            // e é um potencial grupo que tem a estrutura
+            if (type === "structure") {
+              const { elements } = filter
+              return elements.every(elemento => names.has(elemento))
+            }
+
+            // filtro de relação => critérios de distancia
+            if (type === "relation") {
+
+              const { from, to, maxDistance } = filter
+
+              if (!names.has(from) || !names.has(to))
+                return false
+
+              for (let i = 0; i < elementos.length; i++) {
+                for (let j = i + 1; j < elementos.length; j++) {
+
+                  const e1 = elementos[i];
+                  const e2 = elementos[j];
+
+                  // verifica se é o par procurado
+                  if (!((e1.name === from && e2.name === to) || (e1.name === to && e2.name === from)))
+                    continue;
+
+                  let maior = e1
+                  let menor = e2
+
+                  let lenE2 = (e2.stop - e2.start)
+                  let lenE1 = (e1.stop - e1.start)
+
+                  if (lenE2 > lenE1) {
+                    maior = e2
+                    menor = e1
+                  }
+
+                  const inside = menor.start >= maior.start && menor.stop <= maior.stop
+
+                  const distance = Math.min(
+                    Math.abs(e1.stop - e2.start),
+                    Math.abs(e2.stop - e1.start)
+                  )
+
+                  // se um elemento tá contido dentro do outro ou respeita o critério de distancia 
+                  if (inside || distance <= maxDistance)
+                    return true
+                }
+              }
+
+              // falso para caso não seja válido em nenhum filtro de relação
+              return false
+            }
+
+            // retorna falso pra caso nao respeite nenhum dos critérios de filtros
+            return false
+          })
+        })
+
+        return subgroups?.length > 0
+          ? { ...group, subgroups }
+          : null
+
+      }).filter(Boolean)
+
+      return groups?.length > 0
+        ? { ...genome, groups }
+        : null
+
+    }).filter(Boolean)
+  }
 
   return {
     isLoading,
-    groups: filteredGroups,
+    groups: filteredGroupsByRelations,
     foundElementsArray: Array.from(data?.foundElements || []),
     SEARCH_NAME,
     setSearchName,
@@ -116,7 +228,9 @@ export const useGenerateGroups = ({ accessionsData }) => {
     setMaximalDistance,
     toggleElement,
     toggleClassification,
-    INDEX, 
-    setIndex
+    INDEX,
+    setIndex,
+    downloadJSON,
+    availableElements: Array.from(availableElements || [])
   };
 };

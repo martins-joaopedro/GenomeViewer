@@ -157,3 +157,54 @@ input[type="file"] {
     background: var(--accent);
     border-radius: 10px;
 }
+
+.filtersContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filterInputContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    gap: 10px;
+    border-radius: 10px;
+    position: relative;
+    background-color: #0050703b;
+}
+
+.filterInputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+
+.filterInputContainer .remove {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.filterInputContainer .icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    height: 30px;
+    width: 100%;
+}
+
+.filterInputContainer button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}

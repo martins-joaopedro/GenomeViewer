@@ -12,6 +12,9 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import styles from "./styles.module.css";
 import { useBacteriaData } from "../../hooks/useBacteriaData";
 import { useState } from "react";
+import { useFilters } from "../../hooks/useFilters";
+
+import { IoIosInformationCircle } from "react-icons/io";
 
 ChartJS.register(
   CategoryScale,
@@ -23,10 +26,10 @@ ChartJS.register(
   Legend
 );
 
-export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
+export const Plot = ({ groups, index, flattened, width, height, fontSize, elements, filteredElements, onToggleElement }) => {
   const classification = {
     gene: {
-      color: "#ff856d",
+      color: "#fca78e",
       label: "ARG",
     },
     integrons: {
@@ -79,23 +82,63 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
               elementLabel: d.name,
               classification: d.classification,
             })),
-            backgroundColor: elementos.map(
-              (d) =>
-                (classification[d.classification]?.color || "gray") +
-                (flattened ? "80" : "")
-            ),
+            borderRadius: {
+              topLeft: 10,
+              topRight: 10,
+              bottomLeft: 10,
+              bottomRight: 10
+            },
+            borderSkipped: false,
+            backgroundColor: elementos.map((d) => {
+              const color =
+                  (classification[d.classification]?.color || "gray") +
+                  (flattened ? "80" : "");
+
+              if (filteredElements.size > 0) {
+                  return filteredElements.has(d.name)
+                      ? color
+                      : "rgba(0, 0, 0, 0.28)";
+              }
+
+              return color;
+            }),
             barThickness: Math.min(10, height / (elementos.length + 20)),
+            borderColor: ctx => {
+              const raw = ctx.raw
+
+              if(elements.has(raw.elementLabel))
+                return "#000"
+              else if (filteredElements.has(raw.elementLabel))
+                return "#070707"
+            },
+            borderWidth: ctx => {
+                const raw = ctx.raw;
+
+                return elements.has(raw.elementLabel) || filteredElements.has(raw.elementLabel)
+                    ? 2
+                    : 0;
+            },
           },
         ],
       },
       options: {
+        onClick: (event, elements, chart) => {
+          if (!elements.length) return;
+
+          const { datasetIndex, index } = elements[0];
+          const data = chart.data.datasets[datasetIndex].data[index];
+          const { elementLabel } = data
+          
+          // dispara o evento de adição de elemento
+          onToggleElement(elementLabel)
+        },
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: "y",
         scales: {
           x: {
             type: "linear",
-            title: { display: true, text: "Posição no contig" },
+            title: { display: true, text: "Posição" },
             min,
             max,
           },
@@ -106,7 +149,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
               ? ["Elementos"]
               : elementos.map((_, i) => i),
             ticks: {
-              display: !flattened,
+              display: !flattened, 
             },
             grid: {
               display: false,
@@ -187,10 +230,10 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
 
   return (
     <div className={styles.chartsList} data-classification={groups?.classification} >
-      <span className={styles.isolationLabel}>{groups?.isolationSource}</span>
       {groups &&
         allCharts?.map((group, i) => (
           <div className={styles.chartContainer} key={i}>
+            <span className={styles.isolationLabel}>{groups?.isolationSource}</span>
             <div
               className={styles.chart}
               style={{
@@ -198,6 +241,9 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
                 maxHeight: `${!flattened ? height : 300}px`,
               }}
             >
+              <div className={styles.icon}>
+                <IoIosInformationCircle />
+              </div>
               <h4>{group.mainChart.contigName}</h4>
               <Bar data={group.mainChart.chartData} options={group.mainChart.options} />
             </div>
@@ -213,7 +259,10 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize }) => {
                     width: `100%`,
                     maxHeight: `${!flattened ? (height - 100) : 300}px`,
                   }}
-                >
+                > 
+                  <div className={styles.icon}>
+                    <IoIosInformationCircle/>
+                  </div>
                   <h4>{contigName}</h4>
                   <Bar data={chartData} options={options} />
                 </div>))

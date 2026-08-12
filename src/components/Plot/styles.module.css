@@ -1,7 +1,6 @@
 
 .chartContainer {
     gap: 10px;
-    border: 1px solid var(--gray);
     border-radius: 25px;
     padding: 10px;
     box-shadow: 1px 1px 3px rgba(54, 53, 53, 0.121);
@@ -23,39 +22,61 @@
     padding: 45px;
     margin: 10px 0;
     box-shadow: 1px 1px 3px rgba(54, 53, 53, 0.121);
-    background-color: rgb(222, 223, 223);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
     text-align: center;
 }
 
-.chartsList {
+.icon {
+    display: flex;
+    align-items: center;
     padding: 10px;
+    font-size: 15px;
+    width: 40px;
+    height: 40px;
+}
+
+.icon:after {
+    padding: 10px;
+    background-color: var(--background);
+    border-radius: 10px;
+    position: fixed;
+}
+
+
+.chart .icon:hover:after {
+    content: "Esse agrupamento foi formado conforme os parâmetros de distância máxima entre os elementos, mínimo de elementos e outros filtros aplicados, sendo ideal para a visualização completa de uma região!";
+    
+}
+
+.subChart .icon:hover:after {
+    content: "Esse subgrupo é derivado do grupo completo acima, elucidando regiões que são formadas estritamente por um ou mais ARGs que estão em um raio de 5KB um do outro e pelos MGEs que estão contidos nesse raio";
+}
+
+.chartsList {
+    padding: 5px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.chartsList .chartContainer {
-    border: 2px solid transparent;
-}
-
 .chartsList[data-classification="environmental"] .chartContainer {
-    border-color: var(--environmental);
+    background: linear-gradient(var(--environmental), var(--background));
 }
 
 .chartsList[data-classification="clinical"] .chartContainer {
-    border-color: var(--clinical);
+    background: linear-gradient(var(--clinical), var(--background));
 }
 
 
 .chartsList[data-classification="food"] .chartContainer {
-    border-color: var(--food);
+    background: linear-gradient(var(--food), var(--background));
 }
 
 
 .chartsList[data-classification="veterinary"] .chartContainer {
-    border-color: var(--veterinary);
+    background: linear-gradient(var(--veterinary), var(--background));
 }
 
 .chartsList .isolationLabel {

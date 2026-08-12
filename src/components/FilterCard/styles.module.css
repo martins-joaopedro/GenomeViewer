@@ -1,0 +1,42 @@
+.filterCardContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5px;
+    gap: 10px;
+    border-radius: 10px;
+    position: relative;
+    background-color: var(--dark-accent);
+}
+
+.filterCardContainer .remove {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.filterCardContainer .icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    height: 30px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    right: 10px;
+}
+
+.filterCardContainer button {
+    --size: 20px;
+    width: var(--size);
+    height: var(--size);
+    
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}

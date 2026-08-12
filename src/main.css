@@ -2,15 +2,16 @@
 
 :root {
     --background: #d9d9d9;
-    --accent: #84c0c4;
+    --accent: #90c0d3;
+    --dark-accent: #00709c3b;
     --orange: #e4b973;
     --warn: #e87b63;
     --gray: #00000009;
 
-    --environmental: #74a381;
-    --clinical: #78a4c4;
-    --veterinary: #dd7bd8;
-    --food: #de6868;
+    --environmental: #74a381CF;
+    --clinical: #78a4c4CF;
+    --veterinary: #dd7bd8CF;
+    --food: #de6868CF;
 
     font-family: 'Roboto', sans-serif;
 }

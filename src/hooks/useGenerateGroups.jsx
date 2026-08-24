@@ -9,11 +9,10 @@ import { MdElectricBike } from "react-icons/md";
 export const useGenerateGroups = ({ accessionsData, filters }) => {
 
   // params to filter the results
-  const DEFAULT_MAX = 1e30
+  const DEFAULT_MAX = 1000
   const DEFAULT_MIN = 0
 
   const allClassifications = ["clinical", "environmental", "veterinary", "food", "other"]
-
   const state = getData("state");
 
   const [SEARCH_NAME, setSearchName] = useState(state?.SEARCH_NAME || "");
@@ -69,65 +68,100 @@ export const useGenerateGroups = ({ accessionsData, filters }) => {
     setClassifications(res);
   };
 
-  let neededSet = new Set(ELEMENTS_NEEDED);
-  neededSet.add("gene")
 
-  let filteredGroupsByClassification = data?.data || [];
+  // filtros
+  let filteredGroups = data?.data || [];
+  //console.log(filteredGroups.length)
 
+
+
+  // filtro de nome do arquivo
+  if (SEARCH_NAME !== "") {
+    const searchName = String(SEARCH_NAME).toLowerCase();
+    let filteredGroupsByName = filteredGroups.filter(
+      ({ accession }) =>
+        accession
+          .toLowerCase()
+          .includes(searchName)
+        );
+
+    filteredGroups = filteredGroupsByName
+    //console.log(filteredGroups.length)
+  }
+
+
+
+  // filtro de classificação de recurso de isolamento
   if (CLASSIFICATIONS.length > 0) {
-    filteredGroupsByClassification = filteredGroupsByClassification.filter(
+    let filteredGroupsByClassification = filteredGroups.filter(
       ({ isolationClassification }) =>
         CLASSIFICATIONS.includes(isolationClassification)
     );
+    filteredGroups = filteredGroupsByClassification
+    //console.log(filteredGroups.length)
   }
 
-  let filteredGroups = filteredGroupsByClassification;
 
-  if (neededSet.size > 0 || SEARCH_NAME != "") {
-    filteredGroups = filteredGroupsByClassification.map(({ accession, groups, isolationClassification, isolationSource }) => {
 
-      // filter the valid groups
-      const validGroups = groups.filter(group => {
+  // filtro de categorias de elementos necessários
+  let neededSet = new Set(ELEMENTS_NEEDED);
+  neededSet.add("gene")
 
-        // categorias de elementos de um grupo
-        const groupElementSet = new Set();
-        group.elementos.forEach(({ classification }) => {
-          groupElementSet.add(classification)
-        });
+  if (neededSet.size > 1) {
 
-        const hasAllNeededElements = [...neededSet].every(element => groupElementSet.has(element))
+    let filteredGroupsByElementsNedeed = filteredGroups
+      .map(genome => {
 
-        return hasAllNeededElements;
-      });
+        const groups = genome.groups
+          .map(group => {
 
-      // returns the filtering by groups that contain all needed elements 
-      return {
-        classification: isolationClassification,
-        isolationSource,
-        accession: accession,
-        groups: validGroups
-      };
-      // removes non empty groups and filters by name
-    }).filter(item => item.groups.length > 0 && item.accession.toLowerCase().includes(String(SEARCH_NAME).toLowerCase())) || [];
-  }
+            // retorna os subgrupos que tem todos os elementos necessários
+            const subgroups = group.subgroups.filter(
+              subgroup => {
 
-  let availableElements = new Set()
+                const subgroupElementSet = new Set(subgroup.elementos.map(({ classification }) => classification));
 
-  filteredGroups.forEach(({ groups }) => {
-    groups.forEach(({ subgroups }) => {
-      subgroups.forEach(({ elementos }) => {
-        elementos.forEach(({ name }) => availableElements.add(name))
+                return [...neededSet].every(
+                  element =>
+                    subgroupElementSet.has(element)
+                );
+              }
+            );
+
+            // mantém o group somente se
+            // tiver pelo menos um subgrupo válido
+            return subgroups.length > 0
+              ? {
+                ...group,
+                subgroups
+              }
+              : null;
+          })
+          .filter(Boolean);
+
+        // mantém o genoma somente se
+        // tiver pelo menos um group válido
+        return groups.length > 0
+          ? {
+            ...genome,
+            groups
+          }
+          : null;
       })
-    })
-  })
+      .filter(Boolean);
 
-  let filteredGroupsByRelations = filteredGroups
+    filteredGroups = filteredGroupsByElementsNedeed
+    //console.log(filteredGroups.length)
+  }
 
+
+
+  // filtros de relação e estrutura
   filters = filters.filter(({ active }) => active)
 
   if (filters.length > 0) {
 
-    filteredGroupsByRelations = filteredGroups.map(genome => {
+    let filteredGroupsByRelations = filteredGroups.map(genome => {
       const groups = genome.groups.map(group => {
 
         // filtro os subgrupos se eles respeitarem todos os filtros ativos
@@ -209,11 +243,25 @@ export const useGenerateGroups = ({ accessionsData, filters }) => {
         : null
 
     }).filter(Boolean)
+    filteredGroups = filteredGroupsByRelations
+    //console.log(filteredGroups.length)
   }
+
+
+
+  let availableElements = new Set()
+
+  filteredGroups.forEach(({ groups }) => {
+    groups.forEach(({ subgroups }) => {
+      subgroups.forEach(({ elementos }) => {
+        elementos.forEach(({ name }) => availableElements.add(name))
+      })
+    })
+  })
 
   return {
     isLoading,
-    groups: filteredGroupsByRelations,
+    groups: filteredGroups,
     foundElementsArray: Array.from(data?.foundElements || []),
     SEARCH_NAME,
     setSearchName,

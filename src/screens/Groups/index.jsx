@@ -147,6 +147,37 @@ export const Groups = () => {
               onChange={handleFileInput}
             />
 
+            <span>Accession: </span>
+            <input
+              type="text"
+              value={SEARCH_NAME}
+              onChange={({ target }) =>
+                setSearchName(String(target.value))
+            }
+            />
+
+            <span>Altura dos gráficos: {height * 100}</span>
+            <input
+              type="range"
+              min={4}
+              max={9}
+              value={height}
+              onChange={({ target }) =>
+                setHeight(Number(target.value))
+              }
+            />
+
+            <span>Distância máxima: { MAXIMAL_DISTANCE } </span>
+            <input
+              type="range"
+              min={0}
+              max={10}
+              value={MAXIMAL_DISTANCE / 1000}
+              onChange={({ target }) =>
+                setMaximalDistance(Number(target.value) * 1000)
+              }
+            />
+
             <div className={styles.filterInputs}>
               <div className={styles.filterInputContainer}>
                 <span>Filtros de relacionamentos</span>
@@ -283,43 +314,16 @@ export const Groups = () => {
               </div>
             </div>
 
-            <span>Nome do arquivo: </span>
-            <input
-              type="text"
-              value={SEARCH_NAME}
-              onChange={({ target }) =>
-                setSearchName(String(target.value))
-              }
-            />
+            {/* 
+              <span>Mínimo de elementos: </span>
+              <input
+                type="number"
+                value={MINIMAL_ELEMENTS}
+                onChange={({ target }) =>
+                  setMinimalElements(Number(target.value))
+                }
+              /> */}
 
-            <span>Distância máxima: </span>
-            <input
-              type="number"
-              value={MAXIMAL_DISTANCE}
-              onChange={({ target }) =>
-                setMaximalDistance(Number(target.value))
-              }
-            />
-
-            <span>Mínimo de elementos: </span>
-            <input
-              type="number"
-              value={MINIMAL_ELEMENTS}
-              onChange={({ target }) =>
-                setMinimalElements(Number(target.value))
-              }
-            />
-
-            <span>Altura dos gráficos: </span>
-            <input
-              type="range"
-              min={4}
-              max={9}
-              value={height}
-              onChange={({ target }) =>
-                setHeight(Number(target.value))
-              }
-            />
             <button onClick={toggleFlattened}>Achatar</button>
 
             <div className={styles.accessionControls}>

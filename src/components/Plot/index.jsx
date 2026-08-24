@@ -203,7 +203,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
 
       const groupChart = buildChart(
         elementos,
-        `${contig} (Grupo)`,
+        `${contig} - Grupo completo`,
         `${contigIndex}-group`
       );
 
@@ -229,7 +229,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
   const allCharts = generateAllCharts(groups?.groups);
 
   return (
-    <div className={styles.chartsList} data-classification={groups?.classification} >
+    <div className={styles.chartsList} data-classification={groups?.isolationClassification} >
       {groups &&
         allCharts?.map((group, i) => (
           <div className={styles.chartContainer} key={i}>
@@ -241,9 +241,6 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
                 maxHeight: `${!flattened ? height : 300}px`,
               }}
             >
-              <div className={styles.icon}>
-                <IoIosInformationCircle />
-              </div>
               <h4>{group.mainChart.contigName}</h4>
               <Bar data={group.mainChart.chartData} options={group.mainChart.options} />
             </div>
@@ -260,9 +257,6 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
                     maxHeight: `${!flattened ? (height - 100) : 300}px`,
                   }}
                 > 
-                  <div className={styles.icon}>
-                    <IoIosInformationCircle/>
-                  </div>
                   <h4>{contigName}</h4>
                   <Bar data={chartData} options={options} />
                 </div>))

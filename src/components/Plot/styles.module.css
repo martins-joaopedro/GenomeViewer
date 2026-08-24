@@ -11,6 +11,7 @@
     transition: 0.3s all;
     padding: 45px;
     display: flex;
+    box-shadow: 1px 1px 3px rgba(54, 53, 53, 0.121);
     flex-direction: column;
     text-align: center;
 }
@@ -80,28 +81,11 @@
 }
 
 .chartsList .isolationLabel {
-    padding: 5px;
+    display: flex;
+    justify-content: center;
+    padding: 5px 10px;
     border-radius: 15px;
-    min-width: 10px;
     text-align: center;
-    background-color: rgb(184, 183, 183);
-}
-
-.chartsList[data-classification="environmental"] .isolationLabel {
-    background-color: var(--environmental);
-}
-
-.chartsList[data-classification="clinical"] .isolationLabel {
-    background-color: var(--clinical);
-}
-
-
-.chartsList[data-classification="food"] .isolationLabel {
-    background-color: var(--food);
-}
-
-
-.chartsList[data-classification="veterinary"] .isolationLabel {
-    background-color: var(--veterinary);
+    opacity: 0.8;
 }
 

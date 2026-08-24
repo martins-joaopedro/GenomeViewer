@@ -1,10 +1,9 @@
-import { elements } from "chart.js";
 import { get } from "./graph"
 import { getIsolationClassification, getClassificationFile } from "./classifications";
 
 const sorting = (el1, el2) => el1.contig.localeCompare(el2.contig) || el1.start - el2.start;
 
-export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DISTANCE }) => {
+export const getGroups = async ({ accessionsData, MAXIMAL_DISTANCE }) => {
     
     const classificationFile = await getClassificationFile();
  
@@ -13,77 +12,37 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
 
         let elements = [ ...args, ...integrons, ...phages, ...is_digis ]
 
-        // não há elementos para processar
-        if (elements.length === 0) {
-            allGroupsByAccession.push({
-                isolationSource: isolation_source,
-                isolationClassification: getIsolationClassification(
-                    isolation_source,
-                    classificationFile
-                ),
-                accession,
-                groups: []
-            });
-
-            return;
-        }
+        if (elements.length === 0) return;
 
         const sortedElements = [...elements].sort(sorting);
         let elementsNumber = sortedElements.length
         let first = sortedElements[0]
         let contig = first.contig
         let current_group = [first]
-        let group_end = first.stop
-        let group_start = first.start
         let groups = []
-
+        
+        // cria todos os grupos no critério de estar no mesmo contig
         for (let i=1; i<elementsNumber; i++) {
             let node = sortedElements[i]
 
             //mudança de contig - finaliza grupo atual e reinicia 
             if (node.contig != contig) {
-                if(current_group.length >= MINIMAL_ELEMENTS)
-                    groups.push({contig, elementos: current_group})
+                
+                groups.push({contig, elementos: current_group})
                 contig = node.contig
                 current_group = [node]
-                group_start = node.start
-                group_end = node.stop
             }
             else {
-                
-                const isOverlapping =
-                    node.start <= group_end &&
-                    node.stop >= group_start;
-
-                const isCloseEnough =
-                    node.start > group_end &&
-                    node.start - group_end <= MAXIMAL_DISTANCE;
-
-                //mesmo contig, se tiver na proximidade definida, ou dentro do elemento agrupa
-                if (isOverlapping || isCloseEnough) {
-                    current_group.push(node)
-                    group_end = Math.max(group_end, node.stop)
-
-                } 
-                else {
-                    //finaliza o grupo atual
-                        if(current_group.length >= MINIMAL_ELEMENTS)
-                            groups.push({contig, elementos: current_group})
-                    
-                    // começa um grupo no mesmo contig
-                    current_group = [node]
-                    group_start = node.start
-                    group_end = node.stop
-                }
+                current_group.push(node)
             }
         }
 
-        if(current_group.length >= MINIMAL_ELEMENTS)
-            groups.push({contig, elementos: current_group})
+        // adiciona o ultimo grupo
+        groups.push({contig, elementos: current_group})
             
-        // add cada subgrupo em cada grupo
+        // adiciona cada subgrupo em cada grupo nos critérios de distancia
         groups.forEach(group => {
-            const subgroups = checkGroupInRatio(group)
+            const subgroups = checkGroupInRatio(group, MAXIMAL_DISTANCE)
             group.subgroups = subgroups
         })
     
@@ -100,8 +59,24 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
         
     });
 
-    // limpa os accessions de grupos vazios
-    let result = allGroupsByAccession.filter(({ accession, groups }) => groups.length) || []
+    let result = allGroupsByAccession
+    /* // filtra os genomas que não possuem nenhum subgrupo
+    let result = allGroupsByAccession
+    .map(item => {
+
+        // grupos válidos tem subgrupos válidos
+        const validGroups = item.groups.filter(
+            ({ subgroups }) => subgroups?.length >= 0
+        )
+
+        return {
+            ...item,
+            groups: validGroups
+        }
+    })
+    .filter(({ groups }) => groups.length > 0) */
+
+    //console.log(result.length)
 
     // pega todas as tags dos elementos
     let allElementsTag = new Set()
@@ -112,7 +87,7 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
             )
         )
     )
-
+    
     return {
         data: result,
         foundElements: allElementsTag
@@ -120,9 +95,8 @@ export const getGroups = async ({ accessionsData, MINIMAL_ELEMENTS, MAXIMAL_DIST
 }
 
 // valida os grupos completos na relação de ARG + MGE no critério de 5KB
-const checkGroupInRatio = ({ contig, elementos }) => {
+const checkGroupInRatio = ({ contig, elementos }, MAXIMAL_DISTANCE) => {
     
-    const MAXIMAL_DISTANCE = 5000;
     let geneSubgroups = []
 
     const sortedElements = [...elementos].sort(sorting);
@@ -158,9 +132,9 @@ const checkGroupInRatio = ({ contig, elementos }) => {
         }
     })
 
-    if (!geneSubgroups.length) return null
+    if (!geneSubgroups.length) return []
 
-    // agregar elementos que não sao genes e expande os ranges do grupo
+    // agregar elementos que não sao genes
     elementos.forEach(element => {
 
         if (element.classification === "gene") return

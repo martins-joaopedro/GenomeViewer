@@ -26,8 +26,32 @@ export const useFilters = () => {
         });
     }
 
+    const handleAddElement = (ref) => {
+        const { value } = ref.current 
+        if(value != "")
+            setElements(prev => {
+        
+                const next = new Set(prev);        
+                next.add(value);
+        
+                return next;
+            });
+    }
+
+    const handleRemoveElement = (label) => {
+        if(label != "")
+            setElements(prev => {
+
+                const next = new Set(prev);        
+                
+                if (next.has(label))
+                    next.delete(label);
+
+                return next;
+            });
+    }
+
     const handleRemoveFilter = (index) => {
-        console.log(index);
         setFilters(prev =>
             prev.filter((_, i) => i !== index)
         );
@@ -130,6 +154,8 @@ export const useFilters = () => {
         elements,
         elementsList: Array.from(elements),
         filteredElements,
+        handleAddElement,
+        handleRemoveElement,
         handleToggleElement,
         filters,
         handleAddFilter,
@@ -137,6 +163,6 @@ export const useFilters = () => {
         handleRemoveFilter,
         handleClearFilter,
         setFilter,
-        filter
+        filter,
     } 
 }

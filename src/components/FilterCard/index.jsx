@@ -22,17 +22,17 @@ export const FilterCard = ({ index, type, from, to, maxDistance, active, name, e
                     {
                         active ?
                             (
-                                <LiaToggleOnSolid />
+                                <LiaToggleOnSolid color="var(--icons)" />
                             ) :
                             (
-                                <LiaToggleOffSolid />
+                                <LiaToggleOffSolid color="var(--icons)" />
                             )
                     }
                 </button>
                 <button
                     onClick={() => onRemoveFilter(index)}
                 >
-                    <IoMdRemoveCircle />
+                    <IoMdRemoveCircle color="var(--icons)" />
                 </button>
             </div>
 
@@ -41,7 +41,7 @@ export const FilterCard = ({ index, type, from, to, maxDistance, active, name, e
                     <>
                         <span>Nome: {name}</span>
                         <span>De: {from}</span>
-                        <span>Par: {to}</span>
+                        <span>Para: {to}</span>
                         <span>Distância: {maxDistance}</span>
                     </>
                 )

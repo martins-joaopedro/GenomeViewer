@@ -36,7 +36,7 @@ export const Report = ({ report, isolationSource}) => {
               )
               .map(({ name, value }, key) => (
                 <div className={styles.pill} key={key}>
-                  <span className={styles.title}>{name == "isolation_source" ? (value == isolationSource) ? `${name} - EXATO` : "NÃO" : name}: </span>
+                  <span className={styles.title}>{name}: </span>
                   <span className={styles.value}>{value}</span>
                 </div>
               ))}

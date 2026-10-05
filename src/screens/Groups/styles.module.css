@@ -5,26 +5,24 @@
     gap: 10px;
 }
 
-:root {
-    --container-size: clamp(250px, 18%, 300px);
-    --contaner-heigth: 300px;
-}
-
 .chart {
     margin-left: var(--container-size);
     width: calc(100% - var(--container-size));
 }
 
 .container {
+    position: relative;
     display: flex;
     width: 100%;
     word-wrap: break-word;
+    margin-top: var(--horizontal-bar-height);
+    height: 100%;
+    overflow-y: scroll;
 }
 
 .metricsContainer {
-    padding: 10px;
     width: var(--container-size);
-    height: 100%;
+    height: calc(100% - var(--horizontal-bar-height));
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -32,26 +30,50 @@
     gap: 10px;
 }
 
-.metrics {
-    padding: 10px;
-    background-color: var(--accent);
+.horizontalContainer {
+    position: fixed;
+    top: 0;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border-radius: 10px;    
+    width: 100%;
+    overflow-x: scroll;
+    height: var(--horizontal-bar-height);
+    
+    backdrop-filter: blur(50px);
+    z-index: 2;
 }
 
-.metrics button {
+.container button, .horizontalContainer button, .fileLabel{
     min-width: 15px;
-    padding: 5px 10px;
+    padding: 5px;
     border-radius: 10px;
     border: none;
     outline: none;
-    font-size: 0.95rem;
+    font-size: 0.9em;
+
+    background-color: var(--dark-accent);
+    text-align: center;
+    cursor: pointer;
 }
 
-.metrics button:hover {
-    filter: brightness(0.9);
+.horizontalContainer button {
+    background: transparent;
+    border: 1px solid var(--gray);
+}
+
+.horizontalContainer button:hover, .horizontalContainer button[data-fixed = true] {
+    background-color: var(--dark-accent);
+    transition: .2s all;
+}
+
+.container button:hover, .horizontalContainer button:hover, .fileLabel:hover {
+    filter: brightness(0.8);
+}
+
+.metrics {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .metrics input {
@@ -59,7 +81,7 @@
     border-radius: 10px;
     border: none;
     outline: none;
-    font-size: 0.95rem;
+    font-size: 0.9em;
 }
 
 .metrics .cell {
@@ -72,20 +94,6 @@ input[type="file"] {
     display: none;
 }
 
-.fileLabel {
-    background-color: white;
-    text-transform: uppercase;
-    text-align: center;
-    display: block;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 15px
-}
-
-.fileLabel:hover {
-    filter: brightness(0.9);
-}
-
 .controls .checkboxes {
     margin-top: 10px;
     display: flex;
@@ -95,6 +103,7 @@ input[type="file"] {
 }
 
 .controls .checkboxes label {
+    font-size: 0.9em;
     width: 100%;;
     display: flex;
     align-items: center;
@@ -106,14 +115,14 @@ input[type="file"] {
 }
 
 .controls .checkboxes label:hover {
-    background-color: #e6e6e623;
+    background-color: var(--dark-accent);
 }
 
 .controls .checkboxes input[type="checkbox"] {
     width: 12px;
     height: 12px;
     cursor: pointer;
-    accent-color: #212c41;
+    accent-color: var(--icons);
 }
 
 .results {
@@ -127,9 +136,9 @@ input[type="file"] {
 
 .error {
     width: calc(100% - var(--container-size));
-    min-height: 700px;
-    margin: 10px;
     margin-left: var(--container-size);
+    margin-top: 5px;
+    min-height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -137,25 +146,12 @@ input[type="file"] {
     gap: 100px;
     background-color: var(--gray);
     border-radius: 25px;
-    font-size: 20px;
+    font-size: 1.em;
 }
 
 .error :nth-child(1) {
     transform: rotate(90deg);
     font-size: 50px;
-}
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 10px;
 }
 
 .filtersContainer {
@@ -172,13 +168,14 @@ input[type="file"] {
     gap: 10px;
     border-radius: 10px;
     position: relative;
-    background-color: #0050703b;
+    background-color: var(--dark-accent);
 }
 
 .filterInputs {
     display: flex;
     flex-direction: column;
-    gap: 10px
+    gap: 10px;
+    
 }
 
 .filterInputContainer .remove {
@@ -196,15 +193,60 @@ input[type="file"] {
     gap: 10px;
     height: 30px;
     width: 100%;
+    position: absolute;
+    top: 0;
+    right: 10px;
 }
 
 .filterInputContainer button {
-    width: 30px;
-    height: 30px;
+    --size: 20px;
+    width: var(--size);
+    height: var(--size);
+    
     padding: 0;
-    font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
 }
+
+.selectedElements {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.elementsPill {
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 5px;
+    gap: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--gray);
+}
+
+.elementsPill button {
+    background: transparent;
+}
+
+.inputControlsContainer {
+    position: relative;
+    width: 100%;
+    background-color: white;
+    border-radius: 15px;
+}
+
+.inputControlsContainer input {
+    width: 85%;    
+}
+
+.inputControlsContainer button {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+

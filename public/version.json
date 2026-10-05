@@ -1,0 +1,23 @@
+{
+    "versions": [
+        {
+            "version": "1",
+            "features": [
+                "POC: Realiza o agrupamento dos genes e elementos genéticos desde que estejam no mesmo contig",
+                "Feature: Utiliza parametro de distância e de elementos mínimos para formar agrupamentos"
+            ],
+            "date": "Outubro 2025"
+        },
+        {
+            "version": "2",
+            "features": [
+                "Melhorias na interface do usuário aplicando maior consistência e ajuste",
+                "Melhorias na experiência com novos atalhos e botões para maior simplicidade",
+                "Feature: filtros de localização e recurso de isolamento foram implementados",
+                "Feature: novas métricas contabilizando ocorrência e presença de elementos",
+                "Refactor: todo agrupamento é formado por apenas um gene e seus elementos genéticos"
+            ],
+            "date": "Outubro 2026"
+        }
+    ]
+}

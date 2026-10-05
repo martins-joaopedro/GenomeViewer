@@ -1,0 +1,18 @@
+
+.container[data-active = "true"] {
+    position: fixed;
+    inset: 0;
+    background-color: #a0acad8a;
+    backdrop-filter: blur(3px);
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container[data-active = "false"] {
+    display: none;
+}

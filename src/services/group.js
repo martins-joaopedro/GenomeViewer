@@ -1,4 +1,3 @@
-import { get } from "./graph"
 import { getIsolationClassification, getClassificationFile } from "./classifications";
 
 const sorting = (el1, el2) => el1.contig.localeCompare(el2.contig) || el1.start - el2.start;
@@ -59,14 +58,15 @@ export const getGroups = async ({ accessionsData, MAXIMAL_DISTANCE }) => {
         
     });
 
-    let result = allGroupsByAccession
-    /* // filtra os genomas que não possuem nenhum subgrupo
-    let result = allGroupsByAccession
-    .map(item => {
+    // filtra os genomas que não possuem nenhum grupo válido
+    // um grupo válido tem pelo menos um subgrupo
+    // um genoma válido tem pelo menos um grupo
+    let minValidGroup = 1
+    let result = allGroupsByAccession.map(item => {
 
         // grupos válidos tem subgrupos válidos
         const validGroups = item.groups.filter(
-            ({ subgroups }) => subgroups?.length >= 0
+            ({ subgroups }) => subgroups?.length >= minValidGroup
         )
 
         return {
@@ -74,9 +74,7 @@ export const getGroups = async ({ accessionsData, MAXIMAL_DISTANCE }) => {
             groups: validGroups
         }
     })
-    .filter(({ groups }) => groups.length > 0) */
-
-    //console.log(result.length)
+    .filter(({ groups }) => groups.length >= minValidGroup) 
 
     // pega todas as tags dos elementos
     let allElementsTag = new Set()
@@ -94,7 +92,7 @@ export const getGroups = async ({ accessionsData, MAXIMAL_DISTANCE }) => {
     }
 }
 
-// valida os grupos completos na relação de ARG + MGE no critério de 5KB
+/* // valida os grupos completos na relação de ARG + MGE no critério de 5KB
 const checkGroupInRatio = ({ contig, elementos }, MAXIMAL_DISTANCE) => {
     
     let geneSubgroups = []
@@ -142,6 +140,67 @@ const checkGroupInRatio = ({ contig, elementos }, MAXIMAL_DISTANCE) => {
         for (let i = 0; i < geneSubgroups.length; i++) {
             let group = geneSubgroups[i]
 
+            const isInside =
+                element.contig === group.contig &&
+                element.start <= group.maxRange &&
+                element.stop >= group.minRange
+        
+            if (isInside) {
+                group.elementos.push(element)
+            }
+        }
+    })
+
+    // validar subgrupos que devem ter ARG + MGE
+    geneSubgroups = geneSubgroups.filter(group => {
+        const hasGene = group.elementos.some(el => el.classification === "gene")
+        const hasOther = group.elementos.some(el => el.classification !== "gene")
+        return hasGene && hasOther
+    })
+
+    return geneSubgroups.map(sub => ({
+        contig: sub.contig,
+        elementos: sub.elementos
+    }))
+} */
+
+const checkGroupInRatio = ({ contig, elementos }, MAXIMAL_DISTANCE) => {
+    
+    let geneSubgroups = []
+    let CONNECT_GENES = false
+
+    const sortedElements = [...elementos].sort(sorting);
+
+    // cria todos os subgrupos de genes que são cada gene encontrado no grupo
+    sortedElements.forEach(element => {
+
+        if (element.classification !== "gene") 
+            return
+
+        const minRange = Math.max(0, element.start - MAXIMAL_DISTANCE)
+        const maxRange = element.stop + MAXIMAL_DISTANCE
+
+       geneSubgroups.push({
+            contig: element.contig,
+            elementos: [element],
+            minRange,
+            maxRange,
+        })
+    })
+
+    if (!geneSubgroups.length) 
+        return []
+
+    // agrega elementos que não sao genes
+    elementos.forEach(element => {
+
+        if (element.classification === "gene") 
+            return
+
+        for (let i = 0; i < geneSubgroups.length; i++) {
+            let group = geneSubgroups[i]
+
+            // se o elemento está dentro do range do subgrupo
             const isInside =
                 element.contig === group.contig &&
                 element.start <= group.maxRange &&

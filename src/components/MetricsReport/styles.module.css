@@ -1,0 +1,66 @@
+
+.container {
+    padding: 10px;
+    border-radius: 15px;
+    display: flex; 
+    gap: 10px;
+}
+
+.listContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    word-break: break-all;
+}
+
+.distributionContainer {
+    min-width: 250px;
+    height: 100%;
+    margin: 10px 0;
+    font-size: 0.9em;
+    border-radius: 15px;
+    background-color: var(--gray);
+    padding: 10px; 
+    overflow: hidden;
+}
+
+.elementsContainer {
+    margin: 10px 0;
+    max-height: 50%;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.distributionContainer h3 {
+    margin: 10px 0;
+}
+
+.cell {
+    display: flex;
+    flex-direction: column;
+    gap: 5px
+}
+
+.mainCell {
+    background-color: var(--dark-accent);
+    padding: 10px;
+    min-width: calc(var(--container-size) - 20px);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pill {
+    max-width: calc(100% - 4px);
+    align-items: center;
+    padding: 5px;
+    gap: 10px;
+    border-radius: 10px;
+    background-color: var(--dark-accent);;
+}
+
+

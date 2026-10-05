@@ -83,9 +83,40 @@
 .chartsList .isolationLabel {
     display: flex;
     justify-content: center;
-    padding: 5px 10px;
+    padding: 5px;
     border-radius: 15px;
+    border: 1px solid var(--gray);
     text-align: center;
     opacity: 0.8;
+    font-size: 0.8em;
+}
+
+.chartInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 16px;
+
+  width: 100%;
+  margin-top: 2px;
+  padding: 8px 0;
+}
+
+.categoryInfo {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  font-size: 0.7em;
+}
+
+.categoryDot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 

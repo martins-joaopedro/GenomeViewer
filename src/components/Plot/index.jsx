@@ -30,19 +30,19 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
   const classification = {
     gene: {
       color: "#fca78e",
-      label: "ARG",
+      label: "Gene de Resistência",
     },
     integrons: {
       color: "#4BCFCF",
-      label: "Integron",
+      label: "Componente de Integron",
     },
     phage: {
       color: "#0F68DD",
-      label: "Phage",
+      label: "Bacteriófago",
     },
     transposable_phage: {
       color: "#B456EB",
-      label: "Transposable Phage",
+      label: "Bacteriófago Transponível",
     },
     is_isescan: {
       color: "#141414",
@@ -50,7 +50,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
     },
     is_digis: {
       color: "#fccc66",
-      label: "Is_1",
+      label: "IS / Transposon",
     },
   };
 
@@ -194,6 +194,40 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
     };
   };
 
+  const countElements = (elementos) => {
+    const categoryCounter = new Map();
+    const elementCounter = new Map();
+
+    elementos.forEach((element) => {
+      const category = element.classification;
+      const name = element.name;
+
+      categoryCounter.set(
+        category,
+        (categoryCounter.get(category) || 0) + 1
+      );
+
+      elementCounter.set(
+        name,
+        (elementCounter.get(name) || 0) + 1
+      );
+    });
+
+    return {
+      categories: Array.from(categoryCounter, ([name, counting]) => ({
+        name,
+        counting,
+        color: classification[name]?.color,
+        label: classification[name]?.label ?? name
+      })),
+
+      elements: Array.from(elementCounter, ([name, counting]) => ({
+        name,
+        counting
+      }))
+    };
+  };
+
   const generateAllCharts = (groups) => {
     if (!groups) return [];
 
@@ -203,21 +237,29 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
 
       const groupChart = buildChart(
         elementos,
-        `${contig} - Grupo completo`,
+        `${contig} - Visão geral`,
         `${contigIndex}-group`
       );
 
       data.mainChart = groupChart;
+
+      // Informações dos elementos do grupo principal
+      data.mainChart.summary = countElements(elementos);
+
       data.subCharts = []
 
       if (subgroups?.length) {
         subgroups.forEach((sg, sgIndex) => {
           const subChart = buildChart(
             sg.elementos,
-            `${contig} - Subgrupo ${sgIndex + 1}`,
+            `${contig} - Agrupamento ${sgIndex + 1}`,
             `${contigIndex}-sub-${sgIndex}`,
             true // é um subgrupo
           );
+
+          // Informações dos elementos do subgrupo
+          subChart.summary = countElements(sg.elementos);
+
           data.subCharts.push(subChart)
         });
       }
@@ -228,12 +270,40 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
 
   const allCharts = generateAllCharts(groups?.groups);
 
+  const ChartInfo = ({ categories }) => {
+    return (
+      <div className={styles.chartInfo}>
+        {categories.map((category) => (
+          <div
+            className={styles.categoryInfo}
+            key={category.name}
+          >
+            <span
+              className={styles.categoryDot}
+              style={{
+                backgroundColor: category.color,
+              }}
+            />
+
+            <span className={styles.categoryLabel}>
+              {category.label}
+            </span>
+
+            <span className={styles.categoryCount}>
+              {category.counting}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className={styles.chartsList} data-classification={groups?.isolationClassification} >
+      <span className={styles.isolationLabel}>Recurso de isolamento: {groups?.isolationSource}</span>
       {groups &&
         allCharts?.map((group, i) => (
           <div className={styles.chartContainer} key={i}>
-            <span className={styles.isolationLabel}>{groups?.isolationSource}</span>
             <div
               className={styles.chart}
               style={{
@@ -243,12 +313,16 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
             >
               <h4>{group.mainChart.contigName}</h4>
               <Bar data={group.mainChart.chartData} options={group.mainChart.options} />
+              
+              <ChartInfo
+                categories={group.mainChart.summary.categories}
+              />
             </div>
 
             <div className={styles.subChartContainer}>
               
               {group.subCharts &&
-                group.subCharts?.map(({ contigIndex, contigName, chartData, options, isSubGroup }) =>
+                group.subCharts?.map(({ contigIndex, contigName, chartData, options, isSubGroup, summary }) =>
                 (<div
                   className={isSubGroup ? styles.subChart : styles.chart}
                   key={contigIndex}
@@ -259,6 +333,10 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
                 > 
                   <h4>{contigName}</h4>
                   <Bar data={chartData} options={options} />
+
+                  <ChartInfo
+                    categories={summary.categories}
+                  />
                 </div>))
               }
             </div>

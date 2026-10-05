@@ -29,12 +29,12 @@ ChartJS.register(
 export const Plot = ({ groups, index, flattened, width, height, fontSize, elements, filteredElements, onToggleElement }) => {
   const classification = {
     gene: {
-      color: "#fca78e",
-      label: "Gene de Resistência",
+      color: "#f68d6e",
+      label: "Gene de resistência",
     },
     integrons: {
-      color: "#4BCFCF",
-      label: "Componente de Integron",
+      color: "#42d0d0",
+      label: "Componente de integron",
     },
     phage: {
       color: "#0F68DD",
@@ -42,11 +42,7 @@ export const Plot = ({ groups, index, flattened, width, height, fontSize, elemen
     },
     transposable_phage: {
       color: "#B456EB",
-      label: "Bacteriófago Transponível",
-    },
-    is_isescan: {
-      color: "#141414",
-      label: "Is",
+      label: "Bacteriófago transponível",
     },
     is_digis: {
       color: "#fccc66",
